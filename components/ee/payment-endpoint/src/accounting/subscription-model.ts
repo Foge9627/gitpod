@@ -10,8 +10,8 @@ import { orderByEndDateDescThenStartDateDesc, orderByStartDateAscEndDateAsc } fr
 
 /**
  * This class maintains the following invariant on a given set of Subscriptions and over the offered operations:
- *  - Whenever a users paid (non-FREE) subscription starts: End his FREE subscription
- *  - For every period a user has non paid subscription: Grant him a FREE subscription
+ *  - Whenever a users paid (non-FREE) subscription starts: End their FREE subscription
+ *  - For every period a user has non paid subscription: Grant them a FREE subscription
  */
 export class SubscriptionModel {
     protected readonly result: SubscriptionModel.Result = SubscriptionModel.Result.create();
