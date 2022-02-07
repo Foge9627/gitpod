@@ -1425,6 +1425,7 @@ export class GitpodServerEEImpl extends GitpodServerImpl {
         const members = await this.teamDB.findMembersByTeam(teamSubscription.teamId);
         const oldQuantity = teamSubscription.quantity;
         const newQuantity = members.length;
+        log.info(`updateTeamSubscriptionQuantity: oldQuantity=${oldQuantity}, newQuantity=${newQuantity}`);
         try {
             if (oldQuantity < newQuantity) {
                 // Upgrade: Charge for it!
@@ -1446,6 +1447,9 @@ export class GitpodServerEEImpl extends GitpodServerImpl {
                 const description = `Pro-rated upgrade from '${oldQuantity}' to '${newQuantity}' team members (${formatDate(
                     upgradeTimestamp,
                 )})`;
+                log.info(
+                    `chargeForUpgrade: paymentReference=${teamSubscription.paymentReference}, currentTermRemainingRatio=${currentTermRemainingRatio}, diffInCents=${diffInCents}`,
+                );
                 await this.upgradeHelper.chargeForUpgrade(
                     "",
                     teamSubscription.paymentReference,
@@ -1459,6 +1463,7 @@ export class GitpodServerEEImpl extends GitpodServerImpl {
                 end_of_term: false,
             });
         } catch (err) {
+            log.error("updateTeamSubscriptionQuantity failed", err);
             if (chargebee.ApiError.is(err) && err.type === "payment") {
                 throw new ResponseError(ErrorCodes.PAYMENT_ERROR, `${err.api_error_code}: ${err.message}`);
             }
