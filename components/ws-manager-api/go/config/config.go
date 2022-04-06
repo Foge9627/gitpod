@@ -120,6 +120,7 @@ type Configuration struct {
 // AllContainerConfiguration contains the configuration for all container in a workspace pod
 type AllContainerConfiguration struct {
 	Workspace ContainerConfiguration `json:"workspace"`
+	PVC       PVCConfiguration       `json:"pvc"`
 }
 
 // WorkspaceTimeoutConfiguration configures the timeout behaviour of workspaces

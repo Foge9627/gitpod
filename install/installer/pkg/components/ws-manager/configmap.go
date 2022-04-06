@@ -79,6 +79,10 @@ func configmap(ctx *common.RenderContext) ([]runtime.Object, error) {
 					},
 					Image: "OVERWRITTEN-IN-REQUEST",
 				},
+				PVC: config.PVCConfiguration{
+					Size:         ctx.Config.Workspace.PVC.Size,
+					StorageClass: ctx.Config.Workspace.PVC.StorageClass,
+				},
 			},
 			PVC: config.PVCConfiguration{
 				Size:         ctx.Config.Workspace.PVC.Size,
