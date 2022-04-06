@@ -19,7 +19,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = (function() { return this || window || global || self || Function('return this')(); }).call(null);
+var global = (function() {
+  if (this) { return this; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  if (typeof self !== 'undefined') { return self; }
+  return Function('return this')();
+}.call(null));
 
 goog.exportSymbol('proto.iws.EvacuateCGroupRequest', null, global);
 goog.exportSymbol('proto.iws.EvacuateCGroupResponse', null, global);
@@ -486,7 +492,8 @@ proto.iws.PrepareForUserNSResponse.prototype.toObject = function(opt_includeInst
 proto.iws.PrepareForUserNSResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     fsShift: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    fullWorkspaceBackup: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
+    fullWorkspaceBackup: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    persistentVolumeClaim: jspb.Message.getBooleanFieldWithDefault(msg, 3, false)
   };
 
   if (includeInstance) {
@@ -531,6 +538,10 @@ proto.iws.PrepareForUserNSResponse.deserializeBinaryFromReader = function(msg, r
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setFullWorkspaceBackup(value);
       break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setPersistentVolumeClaim(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -574,6 +585,13 @@ proto.iws.PrepareForUserNSResponse.serializeBinaryToWriter = function(message, w
       f
     );
   }
+  f = message.getPersistentVolumeClaim();
+  if (f) {
+    writer.writeBool(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -610,6 +628,24 @@ proto.iws.PrepareForUserNSResponse.prototype.getFullWorkspaceBackup = function()
  */
 proto.iws.PrepareForUserNSResponse.prototype.setFullWorkspaceBackup = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional bool persistent_volume_claim = 3;
+ * @return {boolean}
+ */
+proto.iws.PrepareForUserNSResponse.prototype.getPersistentVolumeClaim = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.iws.PrepareForUserNSResponse} returns this
+ */
+proto.iws.PrepareForUserNSResponse.prototype.setPersistentVolumeClaim = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
