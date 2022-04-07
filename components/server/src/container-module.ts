@@ -98,6 +98,7 @@ import { contentServiceBinder } from "@gitpod/content-service/lib/sugar";
 import { ReferrerPrefixParser } from "./workspace/referrer-prefix-context-parser";
 import { InstallationAdminTelemetryDataProvider } from "./installation-admin/telemetry-data-provider";
 import { IDEService } from "./ide-service";
+import { WorkspaceClusterImagebuilderClientProvider } from "./workspace/workspace-cluster-imagebuilder-client-provider";
 
 export const productionContainerModule = new ContainerModule((bind, unbind, isBound, rebind) => {
     bind(Config).toConstantValue(ConfigFile.fromFile());
@@ -161,7 +162,8 @@ export const productionContainerModule = new ContainerModule((bind, unbind, isBo
         return { address: config.imageBuilderAddr };
     });
     bind(CachingImageBuilderClientProvider).toSelf().inSingletonScope();
-    bind(ImageBuilderClientProvider).toService(CachingImageBuilderClientProvider);
+    bind(WorkspaceClusterImagebuilderClientProvider).toSelf().inSingletonScope();
+    bind(ImageBuilderClientProvider).toService(WorkspaceClusterImagebuilderClientProvider);
     bind(ImageBuilderClientCallMetrics).toService(IClientCallMetrics);
 
     /* The binding order of the context parser does not configure preference/a working order. Each context parser must be able
