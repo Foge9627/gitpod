@@ -850,10 +850,8 @@ func (m *Monitor) finalizeWorkspaceContent(ctx context.Context, wso *workspaceOb
 	}
 
 	pvcFeatureEnabled := false
-	var podUID string
 	if wso.Pod != nil {
 		_, pvcFeatureEnabled = wso.Pod.Labels[pvcWorkspaceFeatureAnnotation]
-		podUID = string(wso.Pod.ObjectMeta.UID)
 	}
 
 	doBackup := wso.WasEverReady() && !wso.IsWorkspaceHeadless()
@@ -949,7 +947,6 @@ func (m *Monitor) finalizeWorkspaceContent(ctx context.Context, wso *workspaceOb
 			Backup:                doBackup && !pvcFeatureEnabled,
 			BackupLogs:            doBackupLogs,
 			PersistentVolumeClaim: pvcFeatureEnabled,
-			PodUid:                podUID,
 		})
 		if resp != nil {
 			gitStatus = resp.GitStatus
