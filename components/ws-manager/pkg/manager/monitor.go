@@ -380,6 +380,7 @@ func actOnPodEvent(ctx context.Context, m actingManager, status *api.WorkspaceSt
 		_, gone := wso.Pod.Annotations[wsk8s.ContainerIsGoneAnnotation]
 
 		if terminated || gone {
+			log.Infof("about to call finalizeWorkspaceContent: %v and %v", terminated, gone)
 			// We start finalizing the workspace content only after the container is gone. This way we ensure there's
 			// no process modifying the workspace content as we create the backup.
 			go m.finalizeWorkspaceContent(ctx, wso)
@@ -818,6 +819,8 @@ func (m *Monitor) finalizeWorkspaceContent(ctx context.Context, wso *workspaceOb
 	defer tracing.FinishSpan(span, nil)
 	log := log.WithFields(wso.GetOWI())
 
+	log.Infof("finalizeWorkspaceContent called")
+
 	workspaceID, ok := wso.WorkspaceID()
 	if !ok {
 		tracing.LogError(span, xerrors.Errorf("cannot find %s annotation", workspaceIDAnnotation))
@@ -1020,11 +1023,13 @@ func (m *Monitor) finalizeWorkspaceContent(ctx context.Context, wso *workspaceOb
 			break
 		}
 
+		log.Infof("attempt: %v, st: %v", err, st)
 		if (err != nil && strings.Contains(err.Error(), context.DeadlineExceeded.Error())) ||
 			st.Code() == codes.Unavailable ||
 			st.Code() == codes.Canceled {
 			// service is currently unavailable or we did not finish in time - let's wait some time and try again
 			time.Sleep(wsdaemonRetryInterval)
+			log.Infof("continue")
 			continue
 		}
 
@@ -1062,6 +1067,7 @@ func (m *Monitor) finalizeWorkspaceContent(ctx context.Context, wso *workspaceOb
 			tracing.LogError(span, backupError)
 		}
 	}
+	log.Infof("finalizeWorkspaceContent done: %v", disposalStatus)
 }
 
 // markTimedoutWorkspaces finds workspaces which can be timeout due to inactivity or max lifetime allowed
