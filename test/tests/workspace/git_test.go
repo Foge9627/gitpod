@@ -50,6 +50,14 @@ func TestGitActions(t *testing.T) {
 				if err != nil {
 					return err
 				}
+				err = git.ConfigUserName(workspaceRoot)
+				if err != nil {
+					return err
+				}
+				err = git.ConfigUserEmail(workspaceRoot)
+				if err != nil {
+					return err
+				}
 				err = git.Add(workspaceRoot)
 				if err != nil {
 					return err
@@ -77,6 +85,14 @@ func TestGitActions(t *testing.T) {
 						"echo \"another test run...\" >> file_to_commit.txt",
 					},
 				}, &resp)
+				if err != nil {
+					return err
+				}
+				err = git.ConfigUserName(workspaceRoot)
+				if err != nil {
+					return err
+				}
+				err = git.ConfigUserEmail(workspaceRoot)
 				if err != nil {
 					return err
 				}
