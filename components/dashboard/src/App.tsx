@@ -44,6 +44,7 @@ import {
 import { refreshSearchData } from "./components/RepositoryFinder";
 import { StartWorkspaceModal } from "./workspaces/StartWorkspaceModal";
 import { parseProps } from "./start/StartWorkspace";
+import SelectIDEModal from "./settings/SelectIDEModal";
 
 const Setup = React.lazy(() => import(/* webpackPrefetch: true */ "./Setup"));
 const Workspaces = React.lazy(() => import(/* webpackPrefetch: true */ "./workspaces/Workspaces"));
@@ -155,6 +156,8 @@ function App() {
     const [isWhatsNewShown, setWhatsNewShown] = useState(false);
     const [isSetupRequired, setSetupRequired] = useState(false);
     const history = useHistory();
+
+    const [shouldShowOnboarding, setShouldShowOnboarding] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -477,6 +480,11 @@ function App() {
         </Route>
     );
 
+    const isOnboardingUser = User.isOnboardingUser(user);
+    if (isOnboardingUser !== shouldShowOnboarding) {
+        setShouldShowOnboarding(isOnboardingUser);
+    }
+
     const hash = getURLHash();
     if (/^(https:\/\/)?github\.dev\//i.test(hash)) {
         window.location.hash = hash.replace(/^(https:\/\/)?github\.dev\//i, "https://github.com/");
@@ -492,16 +500,26 @@ function App() {
     const isWsStart = /\/start\/?/.test(window.location.pathname) && hash !== "";
     if (isWhatsNewShown) {
         toRender = <WhatsNew onClose={() => setWhatsNewShown(false)} />;
-    } else if (isCreation) {
-        toRender = <CreateWorkspace contextUrl={hash} />;
-    } else if (isWsStart) {
-        toRender = <StartWorkspace {...parseProps(hash, window.location.search)} />;
     } else if (/^(github|gitlab)\.com\/.+?/i.test(window.location.pathname)) {
         let url = new URL(window.location.href);
         url.hash = url.pathname;
         url.pathname = "/";
         window.location.replace(url);
         return <div></div>;
+    } else if (isCreation || isWsStart) {
+        if (shouldShowOnboarding) {
+            toRender = (
+                <SelectIDEModal
+                    onClose={() => {
+                        setShouldShowOnboarding(false);
+                    }}
+                />
+            );
+        } else if (isCreation) {
+            toRender = <CreateWorkspace contextUrl={hash} />;
+        } else if (isWsStart) {
+            toRender = <StartWorkspace {...parseProps(hash, window.location.search)} />;
+        }
     }
 
     return <Suspense fallback={<Loading />}>{toRender}</Suspense>;
