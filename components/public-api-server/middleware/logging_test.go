@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	_ "github.com/sirupsen/logrus/hooks/test"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,7 +16,8 @@ func TestLoggingMiddleware(t *testing.T) {
 	req := httptest.NewRequest("GET", "/", nil)
 	rec := httptest.NewRecorder() // this records the response
 
-	wrappedHandler := LoggingMiddleware(someHandler)
+	m := NewLoggingMiddleware()
+	wrappedHandler := m(someHandler)
 	wrappedHandler.ServeHTTP(rec, req)
 
 	if status := rec.Code; status != http.StatusOK {

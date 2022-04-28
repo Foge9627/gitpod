@@ -5,9 +5,9 @@
 package main
 
 import (
-	"github.com/gitpod-io/gitpod/public-api-server/middleware"
 	"github.com/gitpod-io/gitpod/common-go/baseserver"
 	"github.com/gitpod-io/gitpod/common-go/log"
+	"github.com/gitpod-io/gitpod/public-api-server/middleware"
 	v1 "github.com/gitpod-io/gitpod/public-api/v1"
 	"net/http"
 )
@@ -33,7 +33,8 @@ func main() {
 }
 
 func register(srv *baseserver.Server) error {
-	srv.HTTPMux().Handle("/", middleware.LoggingMiddleware(http.HandlerFunc(HelloWorldHandler)))
+	m := middleware.NewLoggingMiddleware(log.Log)
+	srv.HTTPMux().Handle("/", m(http.HandlerFunc(HelloWorldHandler)))
 
 	v1.RegisterWorkspacesServiceServer(srv.GRPC(), v1.UnimplementedWorkspacesServiceServer{})
 	v1.RegisterPrebuildsServiceServer(srv.GRPC(), v1.UnimplementedPrebuildsServiceServer{})
@@ -42,6 +43,5 @@ func register(srv *baseserver.Server) error {
 }
 
 func HelloWorldHandler(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte(`hello world`))
+	w.Write([]byte(`hello world`))
 }
-
