@@ -33,7 +33,7 @@ func main() {
 }
 
 func register(srv *baseserver.Server) error {
-	m := middleware.NewLoggingMiddleware(log.Log)
+	m := middleware.NewLoggingMiddleware()
 	srv.HTTPMux().Handle("/", m(http.HandlerFunc(HelloWorldHandler)))
 
 	v1.RegisterWorkspacesServiceServer(srv.GRPC(), v1.UnimplementedWorkspacesServiceServer{})
